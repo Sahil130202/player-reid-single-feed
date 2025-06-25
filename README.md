@@ -1,24 +1,35 @@
 # Player Re-Identification in a Single Feed
 
-## Project Overview
+## Overview
 
-This project is developed as part of the Liat.ai AI Intern assignment. The goal is to track and re-identify soccer players in a short video captured from a single camera feed. The system should consistently assign and maintain player identities throughout the video, even if a player temporarily leaves the frame.
+This project was developed as part of the **Liat.ai AI Intern assignment**. The primary objective is to consistently identify and track soccer players within a 15-second single-camera video clip using object detection and tracking.
 
 ## Objective
 
-* Detect soccer players in a 15-second video clip using a YOLOv11 model.
-* Assign unique IDs to each player.
-* Ensure IDs remain consistent as players move, interact, and re-enter the frame.
-* Output a video annotated with bounding boxes and player IDs.
+- Detect soccer players using a pretrained YOLOv11 model.
+- Assign consistent and unique IDs to each player.
+- Ensure identity preservation even after temporary disappearance.
+- Output an annotated video showing bounding boxes and player IDs.
 
-## Input
+---
 
-* Video file: `15sec_input_720p.mp4`
-* Pre-trained YOLOv11 model: `yolov11.pt`
+## Requirements
 
-## Output
+### 1. System Dependencies
+- Python ≥ 3.10
+- Git
+- Git LFS (Large File Storage)
+- pip (Python package manager)
 
-* Annotated video with bounding boxes and consistent player IDs: `reid_output.mp4`
+### 2. Python Dependencies
+
+Install them using:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
 
 ## Folder Structure
 
@@ -37,7 +48,7 @@ player_reid_single_feed/
 ├── data/
 │   └── 15sec_input_720p.mp4
 ├── models/
-│   └── yolov11.pt
+│   └── yolov11.pt           # (Excluded in GitHub, managed via Git LFS or provided externally)
 ├── outputs/
 │   └── reid_output.mp4
 ├── report/
@@ -46,77 +57,101 @@ player_reid_single_feed/
 └── README.md
 ```
 
-## Components
+---
 
-### 1. `run.py`
+## How to Run the Project
 
-Main script to load video, run detection and tracking, and save the annotated output.
+### 1. Clone the Repository
 
-### 2. `config/config.yaml`
+```bash
+git clone https://github.com/Sahil130202/player-reid-single-feed.git
+cd player_reid_single_feed
+```
 
-Stores configurable parameters such as paths, detection thresholds, and frame stride.
+### 2. Setup Environment
 
-### 3. `detection/detector.py`
+```bash
+python -m venv venv
+source venv/bin/activate        # or use venv\Scripts\activate on Windows
+pip install -r requirements.txt
+```
 
-Wraps the YOLOv11 model using the `ultralytics` library to perform object detection on each frame.
+### 3. Add YOLOv11 Model
 
-### 4. `tracking/tracker.py`
+Place the YOLOv11 model (`yolov11.pt`) in the `models/` directory.  
+ This file is excluded from GitHub due to its size (>100MB). Use Git LFS or request access.
+https://drive.google.com/file/d/1-5fOSHOSB9UXyP_enOoZNAMScrePVcMD/view
+Use this link to download the yolo11.pt file and place it in models/ folder before running
 
-Implements a basic centroid-based tracking algorithm that assigns and maintains player IDs based on spatial proximity.
+### 4. Run the System
 
-### 5. `utils/visualizer.py`
+```bash
+python run.py
+```
 
-Draws bounding boxes and player IDs on each frame using OpenCV.
-
-### 6. `requirements.txt`
-
-Specifies required Python packages.
-
-### 7. `README.md`
-
-Instructions for setting up, running, and understanding the project.
-
-### 8. `report/player_reid_report.md`
-
-Technical report explaining the methodology, challenges, and outcomes.
-
-## Methodology
-
-1. Load and preprocess the input video.
-2. Detect players in each frame using YOLOv11.
-3. Track players across frames using a centroid-matching logic with missed frame tolerance.
-4. Annotate each frame with bounding boxes and assigned player IDs.
-5. Write the annotated frames into an output video.
-
-## Evaluation
-
-* Manual inspection of the video showed that:
-
-  * Multiple players are detected and assigned distinct IDs.
-  * IDs remain consistent even when players move or interact.
-  * Players retain their IDs upon temporary disappearance and re-entry.
-
-## Tools & Technologies
-
-* Python 3.11
-* PyTorch
-* Ultralytics YOLO
-* OpenCV
-* SciPy, NumPy, YAML
-
-## Future Improvements
-
-* Integrate Deep SORT for better long-term tracking and occlusion handling.
-* Use appearance-based features for re-identification.
-* Support multi-camera input and fusion.
-
-## Authors
-
-Sahil Nayak
-M.Tech in Artificial Intelligence
-GitHub: \[YourGitHub]
-LinkedIn: \[YourLinkedIn]
+The output will be saved in `outputs/reid_output.mp4`.
 
 ---
 
-This documentation is designed to help reviewers at Liat.ai and any future collaborators understand the structure, functionality, and motivation behind the player re-identification system.
+## Key Components
+
+- `detector.py`: Loads YOLOv11 using `torch.hub` and performs player detection.
+- `tracker.py`: Tracks players using centroid logic and ID reassignment strategy.
+- `visualizer.py`: Draws bounding boxes and player IDs on the video frames.
+- `run.py`: Main entry point that ties everything together.
+- `config.yaml`: Central location for all paths and thresholds.
+
+---
+
+## Technical Challenges & Solutions
+
+###  GitHub Large File Limit
+-  Error: GitHub refused to push `yolov11.pt` due to its 186MB size.
+-  Solution: Installed and used [Git LFS](https://git-lfs.github.com/) to handle large file uploads.
+
+###  Player Re-ID Logic Bug
+-  Problem: IDs were reassigning when players touched the ball.
+-  Solution: Changed to **spatial consistency** tracking using bounding box centroids.
+
+
+###  Output Debugging
+- ✔️ Manually reviewed the 15s video to ensure consistent ID annotation.
+
+---
+
+## Limitations
+
+- Currently uses centroid tracking without re-identification embeddings.
+- Accuracy may degrade with occlusion or player overlap.
+- Only tested on a 15s single-feed soccer video.
+
+---
+
+## Future Improvements
+
+- Integrate **Deep SORT** or **ByteTrack** for better ID preservation.
+- Add appearance descriptors (color histograms, embeddings).
+- Generalize to other sports and multi-camera inputs.
+
+---
+
+## Submission Checklist
+
+ Output video `reid_output.mp4`  
+ GitHub Repo: [player-reid-single-feed](https://github.com/Sahil130202/player-reid-single-feed)  
+ Report `player_reid_report.md`  
+ README with full instructions  
+ Clean project structure with modular code  
+ Large model file excluded via Git LFS
+
+---
+
+## Author
+
+**Sahil Nayak**  
+M.Tech in Artificial Intelligence  
+GitHub: [Sahil130202](https://github.com/Sahil130202)
+
+---
+
+This documentation is intended to serve both reviewers and collaborators with full clarity and technical transparency.
