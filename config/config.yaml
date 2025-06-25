@@ -1,0 +1,5 @@
+video_path: data/15sec_input_720p.mp4
+model_path: models/yolov11.pt
+output_video_path: outputs/reid_output.mp4
+detection_conf_thresh: 0.4
+frame_stride: 1
